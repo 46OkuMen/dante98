@@ -6,7 +6,7 @@
 import sys
 import os
 import xlsxwriter
-from rominfo import FILE_BLOCKS, FILES
+from rominfo import FILE_BLOCKS, FILES, ORIGINAL_ROM_DIR, DUMP_XLS_PATH
 
 COMPILER_MESSAGES = [b'Turbo', b'Borland', b'C++', b'Library', b'Copyright']
 
@@ -18,13 +18,12 @@ ASCII_MODE = 2
 THRESHOLD = 2
 
 
-
 def dump(files):
-    print(FILE_BLOCKS)
-    for filename in files:
-        #clean_filename = filename.replace('.decompressed', '')
+    for filename in FILES:
+        # Keep CEDIT/MAIN.EXE safe
+        clean_filename = filename.replace('/', '-')
 
-        worksheet = workbook.add_worksheet(filename)
+        worksheet = workbook.add_worksheet(clean_filename)
         worksheet.write(0, 0, 'Offset', header)
         worksheet.write(0, 1, 'Japanese', header)
         worksheet.write(0, 2, 'JP_len', header)
@@ -43,9 +42,14 @@ def dump(files):
         blocks = FILE_BLOCKS[filename]
 
         if filename.endswith('.DAT'):
-            src_filepath = 'dante98 II original/DANTE2/DAT_RPG/%s' % filename
+            src_filepath = os.path.join(ORIGINAL_ROM_DIR, 'DANTE2', 'DAT_RPG', filename)
+            ASCII_MODE = 0
+        elif filename.startswith('CEDIT'):
+            src_filepath = os.path.join(ORIGINAL_ROM_DIR, filename)
+            ASCII_MODE = 0
         else:
-            src_filepath = 'dante98 II original/DANTE2/%s' % filename
+            src_filepath = os.path.join(ORIGINAL_ROM_DIR, 'DANTE2', filename)
+            ASCII_MODE = 2
 
         #if filename not in UNCOMPRESSED_FILES:
         #    src_filepath = 'original/decompressed/%s.decompressed' % filename
@@ -69,6 +73,7 @@ def dump(files):
                     break
 
             for (start, stop) in blocks:
+                print((hex(start), hex(stop)))
                 cursor = start
                 sjis_buffer_start = cursor
 

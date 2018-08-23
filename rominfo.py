@@ -2,10 +2,20 @@
     Rom description of Dante98 II.
 """
 
-FILES = ['RPG.EXE', 'EDCHIP.EXE', 'EDCONV.EXE', 'EDENEMY.EXE', 'EDMAGIC.EXE',
+import os
+
+ORIGINAL_ROM_DIR = 'original'
+TARGET_ROM_DIR = 'patched'
+
+ORIGINAL_ROM_PATH = os.path.join(ORIGINAL_ROM_DIR, 'dante98-II_w_character.hdi')
+TARGET_ROM_PATH = os.path.join(TARGET_ROM_DIR, 'dante98-II_w_character.hdi')
+DUMP_XLS_PATH = 'dante98-II_dump.xlsx'
+
+FILES = ['RPG.EXE', 'EDCHIP.EXE', 'EDCONV.EXE', 'EDENEMY.EXE', 'EDITEM.EXE', 'EDMAGIC.EXE',
          'EDMAP.EXE', 'EDMENU.EXE', 'EDPACK.EXE', 'EDPLAYER.EXE', 'EDUSAGE.EXE',
          'EDWORD.EXE', 'GF.COM', 'MUSIC.COM', 'UNPACK.BIN', 'ENEMY.DAT',
-         'ITEM.DAT', 'MAGIC.DAT', 'MAPNAME.DAT', 'PLAYER.DAT',  ]
+         'ITEM.DAT', 'MAGIC.DAT', 'MAPNAME.DAT', 'PLAYER.DAT',  'WORD.DAT',
+         'CEDIT/MAIN.EXE']
 
 # LHA is a separate utility
 
@@ -110,6 +120,24 @@ FILE_BLOCKS = {
     ],
 
     'WORD.DAT': [
-        (0x0, 0x792)
+        (0x0, 0x791)
+    ],
+
+    #"""
+    #     Text for character editor
+    #"""
+
+    'CEDIT/MAIN.EXE': [
+        (0x1461f, 0x147a3),  # Needs to be broken up
+        (0x148e7, 0x14940),
+        (0x19050, 0x191f5),  # Needs to be broken up
+        (0x1a6aa, 0x1a8cf),  # Same
+        (0x1b9ea, 0x1babd),
+        (0x1c068, 0x1c24d),
     ],
 }
+
+# DANTE2/GF.COM is the same as CEDIT/GF.COM. Also RPGCONST/GF.COM.
+# RPGCONST/MAIN.EXE is the same as CEDIT/MAIN.EXE.
+
+assert len(FILE_BLOCKS) == len(FILES), "%s %s" % (len(FILE_BLOCKS), len(FILES))

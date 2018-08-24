@@ -19,6 +19,7 @@ FILES = ['RPG.EXE', 'EDCHIP.EXE', 'EDCONV.EXE', 'EDENEMY.EXE', 'EDITEM.EXE', 'ED
 
 # LHA is a separate utility
 
+
 FILE_BLOCKS = {
     #"""
     #    Text for the editor itself
@@ -40,7 +41,8 @@ FILE_BLOCKS = {
 
     'EDENEMY.EXE': [
         (0x14420, 0x148f4),
-        (0x1496c, 0x14c40),
+        (0x1496c, 0x14b05),
+        (0x14b20, 0x14c40),
         (0x14ca2, 0x151bd),
     ],
 
@@ -136,6 +138,23 @@ FILE_BLOCKS = {
         (0x1c068, 0x1c24d),
     ],
 }
+
+POINTER_CONSTANT = {
+    'EDENEMY.EXE': 0x14390,
+}
+
+POINTER_TABLE_SEPARATOR = {
+    'EDENEMY.EXE': '\\\\x79\\\\x12'
+}
+
+# EDENEMY POINTER_CONSTANT = 14390, I'm guessing
+# ESC string is iat 14525
+# 14525 - 14390 = 195 = 95 01.
+# 14544 - 14390 =       b4 01.
+
+
+# 1e 68 95 01 9a 3e 04
+# 1e 68 b4 01 9a 3e 04
 
 # DANTE2/GF.COM is the same as CEDIT/GF.COM. Also RPGCONST/GF.COM.
 # RPGCONST/MAIN.EXE is the same as CEDIT/MAIN.EXE.

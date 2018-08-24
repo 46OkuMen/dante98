@@ -7,20 +7,24 @@ import os
 
 from rominfo import FILES, FILE_BLOCKS, ORIGINAL_ROM_PATH, TARGET_ROM_PATH
 from romtools.disk import Disk, Gamefile, Block
-from romtools.dump import DumpExcel
+from romtools.dump import DumpExcel, PointerExcel
 
 DUMP_XLS_PATH = 'dante98-II_dump.xlsx'
+POINTER_XLS_PATH = 'dante98-II_pointer_dump.xlsx'
 
 Dump = DumpExcel(DUMP_XLS_PATH)
-OriginalDante = Disk(ORIGINAL_ROM_PATH, dump_excel=Dump)
+PtrDump = PointerExcel(POINTER_XLS_PATH)
+OriginalDante = Disk(ORIGINAL_ROM_PATH, dump_excel=Dump, pointer_excel=PtrDump)
 TargetDante = Disk(TARGET_ROM_PATH)
 
-FILES_TO_REINSERT = ['ENEMY.DAT',]
+#FILES_TO_REINSERT = ['EDENEMY.EXE', 'ENEMY.DAT',]
+FILES_TO_REINSERT = ['EDENEMY.EXE',]
 
 for filename in FILES_TO_REINSERT:
     if filename.endswith('.DAT'):
         path_in_disk = "DANTE2\\DAT_RPG"
         gamefile_path = os.path.join('original', 'DANTE2', 'DAT_RPG', filename)
+        pointers = []
     else:
         path_in_disk = "DANTE2\\"
         gamefile_path = os.path.join('original', 'DANTE2', filename)
@@ -29,9 +33,10 @@ for filename in FILES_TO_REINSERT:
 
     for block in FILE_BLOCKS[filename]:
         block = Block(gamefile, block)
+        print(block)
         previous_text_offset = block.start
         diff = 0
-        for t in Dump.get_translations(block):
+        for t in Dump.get_translations(block, include_blank=True):
             print(t.english)
             loc_in_block = t.location - block.start + diff
 
@@ -50,6 +55,13 @@ for filename in FILES_TO_REINSERT:
 
                 assert len(t.en_bytestring) - len(t.jp_bytestring) == 0
 
+            # TODO: Not quite working yet. Check on how the untranslated strings' pointers are being adjusted
+            if t.english == b'':
+                print(hex(t.location), t.english, "Blank string")
+                this_diff = 0
+                gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
+                previous_text_offset = t.location
+                continue
 
             #print(t.jp_bytestring)
             try:
@@ -69,24 +81,20 @@ for filename in FILES_TO_REINSERT:
             assert loc_in_block == i, (hex(loc_in_block), hex(i))
 
             block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
+            #print(block.blockstring)
 
-            #gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
+            gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
             previous_text_offset = t.location
 
             diff += this_diff
+            print("Diff is", diff)
 
-    block_diff = len(block.blockstring) - len(block.original_blockstring)
-    if block_diff < 0:
-        block.blockstring += (-1)*block_diff*b'\x00'
-    block_diff = len(block.blockstring) - len(block.original_blockstring)
-    assert block_diff == 0, block_diff
+        block_diff = len(block.blockstring) - len(block.original_blockstring)
+        if block_diff < 0:
+            block.blockstring += (-1)*block_diff*b'\x00'
+        block_diff = len(block.blockstring) - len(block.original_blockstring)
+        assert block_diff == 0, block_diff
 
-    block.incorporate()
+        block.incorporate()
 
-    # TODO: Don't encode it if the file is in UNCOMPRESSED_FILES
-    gamefile.write(skip_disk=True)
-    #decompressed_path = 'patched/%s' % gamefile.filename
-    #print(decompressed_path)
-    #encode(decompressed_path)
-    encoded_path = 'patched/' + filename
-    TargetDante.insert(encoded_path, path_in_disk=path_in_disk)
+    gamefile.write(path_in_disk=path_in_disk)

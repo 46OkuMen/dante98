@@ -7,13 +7,12 @@ from romtools.disk import Gamefile
 
 from rominfo import POINTER_CONSTANT, POINTER_TABLE_SEPARATOR, FILE_BLOCKS
 
-FILES_WITH_POINTERS = ["EDENEMY.EXE",]
+FILES_WITH_POINTERS = ["EDENEMY.EXE", 'EDPLAYER.EXE', 'EDWORD.EXE']
 
 # POINTER_CONSTANT is the line where "Borland Compiler" appears, rounded down to the nearest 0x10.
 
-# TODO: This regex seems awfully broad.
-# Maybe add a constraint that it's followed by 9a or ff? That seems to be common...
-pointer_regex = r'\\x1e\\x68\\x([0-f][0-f])\\x([0-f][0-f])\\x9a'
+# Removing the 9a at the end of this one. Didn't show up in some pointers.
+pointer_regex = r'\\x1e\\x68\\x([0-f][0-f])\\x([0-f][0-f])'
 pointer_table_regex_base = r'\\x([0-f][0-f])\\x([0-f][0-f])sep'
 
 def capture_pointers_from_function(hx, regex): 
@@ -57,15 +56,21 @@ for gamefile in FILES_WITH_POINTERS:
 
         #print(only_hex)
 
-        pointer_table_regex = pointer_table_regex_base.replace('sep', POINTER_TABLE_SEPARATOR[gamefile])
-        print(pointer_table_regex)
+        try:
+            pointer_table_regex = pointer_table_regex_base.replace('sep', POINTER_TABLE_SEPARATOR[gamefile])
+        except TypeError:
+            # When POINTER_TABLE_SEPARATOR[gamefile] is None, no pointer
+            # tables. skip that regex
+            pointer_table_regex = None
 
         for regex in (pointer_regex, pointer_table_regex):
-            print(regex)
+            if regex is None:
+                continue
+            #print(regex)
             pointers = capture_pointers_from_function(only_hex, regex)
 
             for p in pointers:
-                print(p)
+                #print(p)
                 # Hard-coded pointers are 1e 68 XX YY...
                 if regex == pointer_regex:
                     pointer_location = p.start()//4 + 2
@@ -73,19 +78,28 @@ for gamefile in FILES_WITH_POINTERS:
                 elif regex == pointer_table_regex:
                     pointer_location = p.start()//4
 
+
+
                 pointer_location = '0x%05x' % pointer_location
                 text_location = int(location_from_pointer((p.group(1), p.group(2)), GF.pointer_constant), 16)
 
+                #print("Text:", hex(text_location), "Pointer:", pointer_location)
+
                 if all([not t[0] <= text_location<= t[1] for t in target_areas]):
+                    #print("Skipping")
                     continue
 
                 all_locations = [int(pointer_location, 16),]
 
-                if (GF.filename, text_location) in pointer_locations:
-                    all_locations = pointer_locations[(GF.filename, text_location)]
+                #print(pointer_locations)
+
+                if (GF, text_location) in pointer_locations.keys():
+                    all_locations = pointer_locations[(GF, text_location)]
                     all_locations.append(int(pointer_location, 16))
 
                 pointer_locations[(GF, text_location)] = all_locations
+                print(pointer_locations[(GF, text_location)])
+
 
     # Setup the worksheet for this file
     worksheet = PtrXl.add_worksheet(GF.filename)

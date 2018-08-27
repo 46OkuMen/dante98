@@ -40,7 +40,8 @@ FILE_BLOCKS = {
     ],
 
     'EDENEMY.EXE': [
-        (0x14420, 0x148f4),
+        (0x14420, 0x146d0),
+        (0x146d8, 0x148f4),
         (0x1496c, 0x14b05),
         (0x14b20, 0x14c40),
         (0x14ca2, 0x151bd),
@@ -141,10 +142,14 @@ FILE_BLOCKS = {
 
 POINTER_CONSTANT = {
     'EDENEMY.EXE': 0x14390,
+    'EDPLAYER.EXE': 0xd020,
+    'EDWORD.EXE': 0x8900,
 }
 
 POINTER_TABLE_SEPARATOR = {
-    'EDENEMY.EXE': '\\\\x79\\\\x12'
+    'EDENEMY.EXE': '\\\\x79\\\\x12',
+    'EDPLAYER.EXE': '\\\\xe2\\\\0b',
+    'EDWORD.EXE': None,
 }
 
 # EDENEMY POINTER_CONSTANT = 14390, I'm guessing

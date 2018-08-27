@@ -17,8 +17,8 @@ PtrDump = PointerExcel(POINTER_XLS_PATH)
 OriginalDante = Disk(ORIGINAL_ROM_PATH, dump_excel=Dump, pointer_excel=PtrDump)
 TargetDante = Disk(TARGET_ROM_PATH)
 
-#FILES_TO_REINSERT = ['EDENEMY.EXE', 'ENEMY.DAT',]
-FILES_TO_REINSERT = ['EDENEMY.EXE',]
+#FILES_TO_REINSERT = ['EDENEMY.EXE', ]
+FILES_TO_REINSERT = ['EDENEMY.EXE', 'EDPLAYER.EXE', 'EDWORD.EXE', 'ENEMY.DAT', 'MAPNAME.DAT', 'PLAYER.DAT', 'WORD.DAT']
 
 for filename in FILES_TO_REINSERT:
     if filename.endswith('.DAT'):
@@ -56,9 +56,10 @@ for filename in FILES_TO_REINSERT:
                 assert len(t.en_bytestring) - len(t.jp_bytestring) == 0
 
             # TODO: Not quite working yet. Check on how the untranslated strings' pointers are being adjusted
-            if t.english == b'':
-                print(hex(t.location), t.english, "Blank string")
+            if t.english == b'' or t.english == t.japanese:
+                #print(hex(t.location), t.english, "Blank string")
                 this_diff = 0
+                #print("Diff is", diff)
                 gamefile.edit_pointers_in_range((previous_text_offset, t.location), diff)
                 previous_text_offset = t.location
                 continue
@@ -78,7 +79,7 @@ for filename in FILES_TO_REINSERT:
                     break
                 index += len(t.jp_bytestring) # +2 because len('ll') == 2
 
-            assert loc_in_block == i, (hex(loc_in_block), hex(i))
+            assert loc_in_block == i, (t, hex(loc_in_block), hex(i))
 
             block.blockstring = block.blockstring.replace(t.jp_bytestring, t.en_bytestring, 1)
             #print(block.blockstring)

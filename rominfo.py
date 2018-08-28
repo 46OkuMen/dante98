@@ -144,12 +144,28 @@ POINTER_CONSTANT = {
     'EDENEMY.EXE': 0x14390,
     'EDPLAYER.EXE': 0xd020,
     'EDWORD.EXE': 0x8900,
+    'EDITEM.EXE': 0x99b0,
+    'EDCHIP.EXE': 0x9830,
+    'EDCONV.EXE': 0xcb50,
+    'EDMAGIC.EXE': 0x9890,
+    'EDMAP.EXE': 0x15860,
+    'EDPACK.EXE': 0x3e70,
+    'EDUSAGE.EXE': 0xc620,
+    'RPG.EXE': 0x19e10,
 }
 
 POINTER_TABLE_SEPARATOR = {
     'EDENEMY.EXE': '\\\\x79\\\\x12',
-    'EDPLAYER.EXE': '\\\\xe2\\\\0b',
+    'EDPLAYER.EXE': '\\\\xe2\\\\x0b',
     'EDWORD.EXE': None,
+    'EDITEM.EXE': '\\\\xbb\\\\x08',
+    'EDCHIP.EXE': None,
+    'EDCONV.EXE': None,
+    'EDMAGIC.EXE': '\\\\xa9\\\\x08',
+    'EDMAP.EXE': '\\\\x66\\\\x13',
+    'EDPACK.EXE': None,
+    'EDUSAGE.EXE': '\\\\x02\\\\x0b',
+    'RPG.EXE': '\\\\xe1\\\\x17',   # These probably don't code for anything useful
 }
 
 # EDENEMY POINTER_CONSTANT = 14390, I'm guessing

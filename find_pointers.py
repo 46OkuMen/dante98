@@ -7,7 +7,7 @@ from romtools.disk import Gamefile
 
 from rominfo import POINTER_CONSTANT, POINTER_TABLE_SEPARATOR, FILE_BLOCKS
 
-FILES_WITH_POINTERS = ["EDENEMY.EXE", 'EDPLAYER.EXE', 'EDWORD.EXE']
+FILES_WITH_POINTERS = POINTER_CONSTANT
 
 # POINTER_CONSTANT is the line where "Borland Compiler" appears, rounded down to the nearest 0x10.
 

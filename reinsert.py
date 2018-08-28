@@ -5,7 +5,7 @@
 
 import os
 
-from rominfo import FILES, FILE_BLOCKS, ORIGINAL_ROM_PATH, TARGET_ROM_PATH
+from rominfo import FILE_BLOCKS, ORIGINAL_ROM_PATH, TARGET_ROM_PATH
 from romtools.disk import Disk, Gamefile, Block
 from romtools.dump import DumpExcel, PointerExcel
 
@@ -18,7 +18,11 @@ OriginalDante = Disk(ORIGINAL_ROM_PATH, dump_excel=Dump, pointer_excel=PtrDump)
 TargetDante = Disk(TARGET_ROM_PATH)
 
 #FILES_TO_REINSERT = ['EDENEMY.EXE', ]
-FILES_TO_REINSERT = ['EDENEMY.EXE', 'EDPLAYER.EXE', 'EDWORD.EXE', 'ENEMY.DAT', 'MAPNAME.DAT', 'PLAYER.DAT', 'WORD.DAT']
+FILES_TO_REINSERT = ['EDENEMY.EXE', 'EDPLAYER.EXE', 'EDWORD.EXE',
+                     'EDMAGIC.EXE', 'EDITEM.EXE', 'EDMAP.EXE',
+                     'EDCHIP.EXE', 'EDCONV.EXE',  'EDPACK.EXE',
+                     'EDUSAGE.EXE',
+                     'ENEMY.DAT', 'MAPNAME.DAT', 'PLAYER.DAT', 'WORD.DAT']
 
 for filename in FILES_TO_REINSERT:
     if filename.endswith('.DAT'):
